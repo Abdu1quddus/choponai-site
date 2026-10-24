@@ -1,6 +1,6 @@
 """chopon.ai static site builder.
 
-content/ai/*.md  ->  public/darsliklar/ai/<slug>/index.html
+content/ai/*.md  ->  public/darsliklar/ai/<slug>.html  (served as /darsliklar/ai/<slug>)
 Run:  python build.py
 """
 import html
@@ -197,9 +197,9 @@ def parse_lesson(path):
 
 # ------------------------------------------------------------------ templates
 def page(title, desc, body, depth, active="", body_class=""):
-    p = "../" * depth
-    nav = [("Bosh sahifa", "index.html", "home"), ("Darsliklar", "darsliklar/index.html", "lessons"),
-           ("Biz haqimizda", "index.html#biz-haqimizda", "about")]
+    p = "/"  # absolute paths: site lives at the domain root
+    nav = [("Bosh sahifa", "home", "home"), ("Darsliklar", "darsliklar", "lessons"),
+           ("Biz haqimizda", "home#biz-haqimizda", "about")]
     links = "".join(f'<a href="{p}{href}"{" class=\"active\"" if key == active else ""}>{name}</a>'
                     for name, href, key in nav)
     full_title = f"{title} — {SITE}" if title != SITE else "chopon.ai — AI’ni dehqonchasiga o‘rganamiz"
@@ -224,7 +224,7 @@ def page(title, desc, body, depth, active="", body_class=""):
 <a class="skip" href="#main">Asosiy matnga o‘tish</a>
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="{p}index.html"><img src="{p}assets/img/logo-160.png" alt="" width="44" height="44"><span>chopon<b>.ai</b></span></a>
+    <a class="brand" href="/home"><img src="{p}assets/img/logo-160.png" alt="" width="44" height="44"><span>chopon<b>.ai</b></span></a>
     <nav aria-label="Asosiy menyu">{links}</nav>
   </div>
 </header>
@@ -248,7 +248,7 @@ def page(title, desc, body, depth, active="", body_class=""):
 def toc_rows(lessons, prefix, limit=None):
     rows = []
     for l in lessons[:limit]:
-        rows.append(f"""<li><a class="toc-row" href="{prefix}{l['slug']}/index.html" data-tags="{html.escape(l['tag'])}">
+        rows.append(f"""<li><a class="toc-row" href="/darsliklar/ai/{l['slug']}" data-tags="{html.escape(l['tag'])}">
   <span class="num">{l['id']}</span>
   <span class="ttl">{html.escape(l['title'])}<small>{html.escape(l['lead'])}</small></span>
   <span class="meta"><span class="chip">{html.escape(l['tag'])}</span><span class="time">{l['time']} daqiqa</span></span>
@@ -266,8 +266,8 @@ def build_home(lessons):
       <p class="hero-lead">Murakkab atamalarsiz, hazil va memlar bilan. Har bir mavzu ikki qavatli:
       avval bir og‘iz qisqa izoh, keyin istaganingizcha chuqur tushuntirish.</p>
       <div class="cta">
-        <a class="btn btn-yellow" href="darsliklar/ai/{lessons[0]['slug']}/index.html">Birinchi darsni boshlash</a>
-        <a class="btn btn-ghost" href="darsliklar/ai/index.html">Barcha mavzular</a>
+        <a class="btn btn-yellow" href="/darsliklar/ai/{lessons[0]['slug']}">Birinchi darsni boshlash</a>
+        <a class="btn btn-ghost" href="/darsliklar/ai">Barcha mavzular</a>
       </div>
     </div>
     <div class="hero-badge"><img src="assets/img/logo-512.png" alt="chopon.ai logotipi: chopon va elektron sxema" width="420" height="420"></div>
@@ -285,7 +285,7 @@ def build_home(lessons):
 
 <section class="wrap home-list" aria-labelledby="new-h">
   <div class="sec-head"><h2 id="new-h" class="sec-title">AI darsliklar</h2>
-  <a class="more" href="darsliklar/ai/index.html">Hammasi ({len(lessons)}) →</a></div>
+  <a class="more" href="/darsliklar/ai">Hammasi ({len(lessons)}) →</a></div>
   {toc_rows(lessons, "darsliklar/ai/", 6)}
 </section>
 
@@ -302,20 +302,22 @@ def build_home(lessons):
   </div>
 </section>
 """
-    (OUT / "index.html").write_text(page(SITE, "Sun’iy intellekt haqida o‘zbek tilida oddiy, qiziqarli va memlar bilan yozilgan darsliklar.", body, 0, "home", "home"), "utf8")
+    html_ = page(SITE, "Sun’iy intellekt haqida o‘zbek tilida oddiy, qiziqarli va memlar bilan yozilgan darsliklar.", body, 0, "home", "home")
+    (OUT / "index.html").write_text(html_, "utf8")  # choponai.uz/
+    (OUT / "home.html").write_text(html_, "utf8")   # choponai.uz/home
 
 
 def build_lessons_hub(lessons):
     body = f"""
 <section class="page-hero ikat">
   <div class="wrap">
-    <nav class="crumbs" aria-label="Yo‘l"><a href="../index.html">Bosh sahifa</a><span>/</span><span>Darsliklar</span></nav>
+    <nav class="crumbs" aria-label="Yo‘l"><a href="/home">Bosh sahifa</a><span>/</span><span>Darsliklar</span></nav>
     <h1>Darsliklar</h1>
     <p class="lead">Bo‘limni tanlang. Hozircha birinchi bo‘lim ochiq, qolganlari tikilmoqda.</p>
   </div>
 </section>
 <section class="wrap hub">
-  <a class="patch" href="ai/index.html">
+  <a class="patch" href="/darsliklar/ai">
     <span class="patch-k">Bo‘lim 01</span>
     <h2>AI darsliklar</h2>
     <p>Sun’iy intellekt asoslari, promptlar, xavfsizlik, ish va biznes. Matnli, memli, dehqonchasiga.</p>
@@ -331,9 +333,8 @@ def build_lessons_hub(lessons):
   </div>
 </section>
 """
-    d = OUT / "darsliklar"
-    d.mkdir(parents=True, exist_ok=True)
-    (d / "index.html").write_text(page("Darsliklar", "chopon.ai darsliklari: AI darsliklar va boshqa bo‘limlar.", body, 1, "lessons"), "utf8")
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "darsliklar.html").write_text(page("Darsliklar", "chopon.ai darsliklari: AI darsliklar va boshqa bo‘limlar.", body, 1, "lessons"), "utf8")
 
 
 def build_ai_index(lessons):
@@ -342,7 +343,7 @@ def build_ai_index(lessons):
     body = f"""
 <section class="page-hero ikat">
   <div class="wrap">
-    <nav class="crumbs" aria-label="Yo‘l"><a href="../../index.html">Bosh sahifa</a><span>/</span><a href="../index.html">Darsliklar</a><span>/</span><span>AI darsliklar</span></nav>
+    <nav class="crumbs" aria-label="Yo‘l"><a href="/home">Bosh sahifa</a><span>/</span><a href="/darsliklar">Darsliklar</a><span>/</span><span>AI darsliklar</span></nav>
     <h1>AI darsliklar</h1>
     <p class="lead">{len(lessons)} ta mavzu. Tartib bilan o‘qisangiz, noldan boshlab AI bilan bemalol ishlaydigan bo‘lasiz.
     Har bir darsda avval qisqa izoh, keyin chuqur tushuntirish va, albatta, memlar bor.</p>
@@ -357,9 +358,9 @@ def build_ai_index(lessons):
   <p class="empty" hidden>Hech narsa topilmadi. Boshqa so‘z bilan qidirib ko‘ring 🤷‍♂️</p>
 </section>
 """
-    d = OUT / "darsliklar" / "ai"
+    d = OUT / "darsliklar"
     d.mkdir(parents=True, exist_ok=True)
-    (d / "index.html").write_text(page("AI darsliklar", "Sun’iy intellekt bo‘yicha o‘zbek tilidagi matnli darsliklar ro‘yxati.", body, 2, "lessons"), "utf8")
+    (d / "ai.html").write_text(page("AI darsliklar", "Sun’iy intellekt bo‘yicha o‘zbek tilidagi matnli darsliklar ro‘yxati.", body, 2, "lessons"), "utf8")
 
 
 def build_lesson(l, prev, nxt):
@@ -368,7 +369,7 @@ def build_lesson(l, prev, nxt):
     def card(x, label, cls):
         if not x:
             return "<span></span>"
-        return (f'<a class="pn {cls}" href="../{x["slug"]}/index.html"><span>{label}</span>'
+        return (f'<a class="pn {cls}" href="/darsliklar/ai/{x["slug"]}"><span>{label}</span>'
                 f'<strong>{x["id"]}. {html.escape(x["title"])}</strong></a>')
 
     body = f"""
@@ -376,7 +377,7 @@ def build_lesson(l, prev, nxt):
 <article class="lesson">
   <header class="lesson-hero ikat">
     <div class="wrap">
-      <nav class="crumbs" aria-label="Yo‘l"><a href="../../../index.html">Bosh sahifa</a><span>/</span><a href="../../index.html">Darsliklar</a><span>/</span><a href="../index.html">AI darsliklar</a></nav>
+      <nav class="crumbs" aria-label="Yo‘l"><a href="/home">Bosh sahifa</a><span>/</span><a href="/darsliklar">Darsliklar</a><span>/</span><a href="/darsliklar/ai">AI darsliklar</a></nav>
       <span class="lesson-num" aria-hidden="true">{l['id']}</span>
       <h1>{html.escape(l['title'])}</h1>
       <p class="lead">{html.escape(l['lead'])}</p>
@@ -398,9 +399,9 @@ def build_lesson(l, prev, nxt):
   </div>
 </article>
 """
-    d = OUT / "darsliklar" / "ai" / l["slug"]
+    d = OUT / "darsliklar" / "ai"
     d.mkdir(parents=True, exist_ok=True)
-    (d / "index.html").write_text(page(l["title"], l["lead"], body, 3, "lessons", "lesson-page"), "utf8")
+    (d / f"{l['slug']}.html").write_text(page(l["title"], l["lead"], body, 3, "lessons", "lesson-page"), "utf8")
 
 
 def main():
