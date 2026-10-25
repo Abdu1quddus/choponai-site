@@ -214,7 +214,10 @@ def page(title, desc, body, depth, active="", body_class=""):
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:image" content="{p}assets/img/logo-512.png">
 <meta name="theme-color" content="#022391">
-<link rel="icon" href="{p}assets/img/favicon-64.png">
+<link rel="icon" href="{p}assets/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="{p}assets/img/tab-icon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="{p}assets/img/tab-icon-64.png">
+<link rel="apple-touch-icon" href="{p}assets/img/tab-icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONTS}">
