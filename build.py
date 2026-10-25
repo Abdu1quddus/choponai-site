@@ -13,6 +13,13 @@ CONTENT = ROOT / "content" / "ai"
 OUT = ROOT / "public"
 SITE = "chopon.ai"
 
+IG_URL = "https://www.instagram.com/chopon.ai/"
+TG_URL = "https://t.me/chopon_ai"
+IG_SVG = ('<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/>'
+          '<circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor"/></svg>')
+TG_SVG = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 3.6 2.9 10.8c-1 .4-1 1.6.1 1.9l4.6 1.5 1.8 5.6c.3.8 1.3 1 1.9.4l2.6-2.4 4.8 3.5c.7.5 1.7.1 1.9-.7l3.2-15.4c.2-1-.7-1.9-1.7-1.6Z" '
+          'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m7.6 14.2 9.6-6.3-7.1 7.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>')
+
 FONTS = ("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800"
          "&family=Unbounded:wght@500;600;700;800&display=swap")
 
@@ -248,6 +255,7 @@ def page(title, desc, body, depth, active="", body_class="", private=False):
     <div class="f-brand"><img src="{p}assets/img/logo-160.png" alt="chopon.ai logotipi" width="72" height="72">
       <div><strong>chopon<b>.ai</b></strong><span>Chopon egnimizda, AI qo‘limizda</span></div></div>
     <p class="f-note">Sun’iy intellektni o‘zbek tilida, oddiy va qiziqarli tushuntiramiz.</p>
+    <nav class="f-social" aria-label="Ijtimoiy tarmoqlar"><a href="{IG_URL}" target="_blank" rel="noopener" aria-label="Instagram: @chopon.ai">{IG_SVG}</a><a href="{TG_URL}" target="_blank" rel="noopener" aria-label="Telegram: @chopon_ai">{TG_SVG}</a></nav>
     <p class="f-copy">© 2026 chopon.ai</p>
   </div>
 </footer>
@@ -300,6 +308,21 @@ def build_home(lessons):
   <div class="sec-head"><h2 id="new-h" class="sec-title">AI darsliklar</h2>
   <a class="more" href="/darsliklar/ai">Hammasi ({len(lessons)}) →</a></div>
   {toc_rows(lessons, "darsliklar/ai/", 6)}
+</section>
+
+<section class="wrap social" aria-labelledby="soc-h">
+  <h2 id="soc-h" class="sec-title">Bizni kuzatib boring</h2>
+  <p class="soc-lead">Yangi darslar, AI yangiliklari va memlar avval shu yerda chiqadi.</p>
+  <div class="soc-grid">
+    <a class="soc-card ig" href="{IG_URL}" target="_blank" rel="noopener">
+      <span class="soc-ico">{IG_SVG}</span>
+      <span class="soc-txt"><strong>Instagram</strong><small>@chopon.ai · reels va qisqa darslar</small></span>
+      <span class="soc-go" aria-hidden="true">→</span></a>
+    <a class="soc-card tg" href="{TG_URL}" target="_blank" rel="noopener">
+      <span class="soc-ico">{TG_SVG}</span>
+      <span class="soc-txt"><strong>Telegram</strong><small>@chopon_ai · kanal va yangiliklar</small></span>
+      <span class="soc-go" aria-hidden="true">→</span></a>
+  </div>
 </section>
 
 <section id="biz-haqimizda" class="about">

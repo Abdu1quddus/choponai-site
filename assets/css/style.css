@@ -398,3 +398,34 @@ a.patch { background: var(--primary); color: var(--white); }
   .a-grid { grid-template-columns: 1fr; }
   .a-card { padding: 18px 16px; }
 }
+
+/* ---------- social links ---------- */
+.social { padding: 0 20px 90px; }
+.soc-lead { margin: -14px 0 26px; color: var(--muted); font-size: 18px; }
+.soc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.soc-card {
+  position: relative; display: flex; align-items: center; gap: 18px; padding: 22px 24px;
+  border: 2px solid var(--ink); border-radius: 20px; box-shadow: 6px 6px 0 var(--ink);
+  text-decoration: none; color: var(--white); transition: transform .15s, box-shadow .15s;
+}
+.soc-card::after { content: ""; position: absolute; inset: 8px; border: 2px dashed rgba(250, 190, 49, .6); border-radius: 13px; pointer-events: none; }
+.soc-card.ig { background: var(--primary); }
+.soc-card.tg { background: var(--electric); }
+.soc-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--ink); }
+.soc-ico { flex: none; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 16px; background: var(--white); color: var(--primary); }
+.soc-ico svg { width: 30px; height: 30px; }
+.soc-txt { flex: 1; min-width: 0; }
+.soc-txt strong { display: block; font: 700 22px var(--display); }
+.soc-txt small { display: block; font-size: 15px; color: #D5E0FF; margin-top: 2px; }
+.soc-go { font: 700 26px var(--display); color: var(--yellow); }
+.f-social { display: flex; gap: 10px; }
+.f-social a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: var(--white); border: 2px solid rgba(253, 253, 254, .35); }
+.f-social a:hover { border-color: var(--yellow); color: var(--yellow); }
+.f-social svg { width: 22px; height: 22px; }
+.site-footer .wrap { grid-template-columns: auto 1fr auto auto; }
+@media (max-width: 960px) { .site-footer .wrap { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .soc-grid { grid-template-columns: 1fr; }
+  .soc-card { padding: 18px; gap: 14px; }
+  .soc-ico { width: 50px; height: 50px; }
+}
