@@ -413,6 +413,7 @@ def main():
     shutil.copytree(ROOT / "assets", OUT / "assets")
     (OUT / "CNAME").write_text("choponai.uz\n")  # GitHub Pages custom domain
     (OUT / ".nojekyll").write_text("")
+    shutil.copy(ROOT / "assets" / "img" / "favicon.ico", OUT / "favicon.ico")  # browsers also request /favicon.ico
     lessons = sorted((parse_lesson(p) for p in CONTENT.glob("*.md")), key=lambda x: x["id"])
     build_home(lessons)
     build_lessons_hub(lessons)
