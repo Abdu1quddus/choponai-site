@@ -425,15 +425,6 @@ def build_admin():
     <h2>Firebase hali ulanmagan</h2>
     <p><code>assets/js/firebase-config.js</code> fayliga Firebase loyihasi ma’lumotlarini kiriting.</p>
   </div>
-  <div id="a-login" class="a-card a-login" hidden>
-    <h2>Kirish</h2>
-    <form id="a-form">
-      <label>Email<input id="a-email" type="email" autocomplete="username" required></label>
-      <label>Parol<input id="a-pass" type="password" autocomplete="current-password" required></label>
-      <button class="btn btn-yellow" type="submit">Kirish</button>
-      <p id="a-err" class="a-err" role="alert"></p>
-    </form>
-  </div>
   <div id="a-dash" hidden>
     <div class="a-bar">
       <div class="filters" role="group" aria-label="Davr">
@@ -444,7 +435,7 @@ def build_admin():
       </div>
       <div class="a-acts"><span id="a-status" class="a-status"></span>
         <button type="button" id="a-reload" class="filter">↻ Yangilash</button>
-        <button type="button" id="a-out" class="filter">Chiqish (<span id="a-who"></span>)</button></div>
+</div>
     </div>
     <div id="a-kpi" class="kpis"></div>
     <div class="a-card"><div class="a-head"><h2>Kunlar bo‘yicha</h2>

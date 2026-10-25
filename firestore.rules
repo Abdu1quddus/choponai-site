@@ -1,14 +1,10 @@
 rules_version = '2';
 // chopon.ai — visitors may only create their own visit record and grow its duration;
-// only the admin account can read statistics. Nobody can delete.
+// anyone can read the stats (owner's choice). Nobody can delete.
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAdmin() {
-      return request.auth != null && request.auth.token.email == "karimsherovabdulquddus@gmail.com";
-    }
-
     match /visits/{id} {
-      allow read: if isAdmin();
+      allow read: if true;  // stats page /salohiddin is open by owner's choice (no personal data stored)
 
       allow create: if request.resource.data.keys().hasOnly(
                          ['path', 'title', 'visitor', 'session', 'ref', 'device', 'lang', 'ts', 'duration'])

@@ -1,37 +1,19 @@
-// chopon.ai — private statistics page (/salohiddin). Reads visits from Firestore after sign-in.
+// chopon.ai — statistics page (/salohiddin, not linked anywhere). Reads visits from Firestore.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, query, where, orderBy, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const $ = (s) => document.querySelector(s);
 const cfg = window.CHOPON_FIREBASE || {};
-const show = (id) => ["#a-setup", "#a-login", "#a-dash"].forEach((s) => ($(s).hidden = s !== id));
+const show = (id) => ["#a-setup", "#a-dash"].forEach((s) => ($(s).hidden = s !== id));
 
 if (!cfg.apiKey) {
   show("#a-setup");
 } else {
-  const app = initializeApp(cfg);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  const db = getFirestore(initializeApp(cfg));
   let days = 7;
+  show("#a-dash");
+  load();
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) { $("#a-who").textContent = user.email; show("#a-dash"); load(); }
-    else show("#a-login");
-  });
-
-  $("#a-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const btn = $("#a-form button"), err = $("#a-err");
-    btn.disabled = true; err.textContent = "";
-    try {
-      await signInWithEmailAndPassword(auth, $("#a-email").value.trim(), $("#a-pass").value);
-    } catch (ex) {
-      err.textContent = "Email yoki parol noto‘g‘ri.";
-    }
-    btn.disabled = false;
-  });
-  $("#a-out").addEventListener("click", () => signOut(auth));
   $("#a-reload").addEventListener("click", () => load());
   document.querySelectorAll(".rng").forEach((b) => b.addEventListener("click", () => {
     document.querySelectorAll(".rng").forEach((x) => x.classList.remove("on"));
@@ -47,8 +29,7 @@ if (!cfg.apiKey) {
       render(rows, since);
       $("#a-status").textContent = "Yangilandi: " + new Date().toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" });
     } catch (ex) {
-      $("#a-status").textContent = ex.code === "permission-denied"
-        ? "Bu akkauntga statistikani ko‘rishga ruxsat berilmagan." : "Xatolik: " + ex.message;
+      $("#a-status").textContent = "Xatolik: " + ex.message;
     }
   }
 }
