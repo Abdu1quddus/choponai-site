@@ -196,14 +196,21 @@ def parse_lesson(path):
 
 
 # ------------------------------------------------------------------ templates
+
+def v(rel):
+    """Cache-busting suffix so browsers fetch updated CSS/JS right after a deploy."""
+    import hashlib
+    return "?v=" + hashlib.md5((ROOT / rel).read_bytes()).hexdigest()[:8]
+
+
 def page(title, desc, body, depth, active="", body_class="", private=False):
     p = "/"  # absolute paths: site lives at the domain root
     nav = [("Bosh sahifa", "home", "home"), ("Darsliklar", "darsliklar", "lessons"),
            ("Biz haqimizda", "home#biz-haqimizda", "about")]
     links = "".join(f'<a href="{p}{href}"{" class=\"active\"" if key == active else ""}>{name}</a>'
                     for name, href, key in nav)
-    scripts = (f'<script type="module" src="{p}assets/js/admin.js"></script>' if private else
-               f'<script src="{p}assets/js/site.js" defer></script>\n<script src="{p}assets/js/track.js" defer></script>')
+    scripts = (f'<script type="module" src="{p}assets/js/admin.js{v("assets/js/admin.js")}"></script>' if private else
+               f'<script src="{p}assets/js/site.js{v("assets/js/site.js")}" defer></script>\n<script src="{p}assets/js/track.js{v("assets/js/track.js")}" defer></script>')
     full_title = f"{title} — {SITE}" if title != SITE else "chopon.ai — AI’ni dehqonchasiga o‘rganamiz"
     return f"""<!doctype html>
 <html lang="uz">
@@ -223,7 +230,7 @@ def page(title, desc, body, depth, active="", body_class="", private=False):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{FONTS}">
-<link rel="stylesheet" href="{p}assets/css/style.css">
+<link rel="stylesheet" href="{p}assets/css/style.css{v("assets/css/style.css")}">
 </head>
 <body class="{body_class}">
 <a class="skip" href="#main">Asosiy matnga o‘tish</a>
@@ -244,7 +251,7 @@ def page(title, desc, body, depth, active="", body_class="", private=False):
     <p class="f-copy">© 2026 chopon.ai</p>
   </div>
 </footer>
-<script src="{p}assets/js/firebase-config.js"></script>
+<script src="{p}assets/js/firebase-config.js{v("assets/js/firebase-config.js")}"></script>
 {scripts}
 </body>
 </html>
