@@ -1,0 +1,35 @@
+rules_version = '2';
+// chopon.ai — visitors may only create their own visit record and grow its duration;
+// only the admin account can read statistics. Nobody can delete.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "karimsherovabdulquddus@gmail.com";
+    }
+
+    match /visits/{id} {
+      allow read: if isAdmin();
+
+      allow create: if request.resource.data.keys().hasOnly(
+                         ['path', 'title', 'visitor', 'session', 'ref', 'device', 'lang', 'ts', 'duration'])
+                    && request.resource.data.path is string && request.resource.data.path.size() <= 150
+                    && request.resource.data.title is string && request.resource.data.title.size() <= 150
+                    && request.resource.data.visitor is string && request.resource.data.visitor.size() <= 40
+                    && request.resource.data.session is string && request.resource.data.session.size() <= 40
+                    && request.resource.data.ref is string && request.resource.data.ref.size() <= 150
+                    && request.resource.data.device in ['mobile', 'tablet', 'desktop']
+                    && request.resource.data.lang is string && request.resource.data.lang.size() <= 10
+                    && request.resource.data.duration == 0
+                    && request.resource.data.ts is timestamp
+                    && request.resource.data.ts > request.time - duration.value(10, 'm')
+                    && request.resource.data.ts < request.time + duration.value(10, 'm');
+
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['duration'])
+                    && request.resource.data.duration is int
+                    && request.resource.data.duration >= resource.data.duration
+                    && request.resource.data.duration <= 14400;
+
+      allow delete: if false;
+    }
+  }
+}

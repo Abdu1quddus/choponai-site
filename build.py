@@ -196,12 +196,14 @@ def parse_lesson(path):
 
 
 # ------------------------------------------------------------------ templates
-def page(title, desc, body, depth, active="", body_class=""):
+def page(title, desc, body, depth, active="", body_class="", private=False):
     p = "/"  # absolute paths: site lives at the domain root
     nav = [("Bosh sahifa", "home", "home"), ("Darsliklar", "darsliklar", "lessons"),
            ("Biz haqimizda", "home#biz-haqimizda", "about")]
     links = "".join(f'<a href="{p}{href}"{" class=\"active\"" if key == active else ""}>{name}</a>'
                     for name, href, key in nav)
+    scripts = (f'<script type="module" src="{p}assets/js/admin.js"></script>' if private else
+               f'<script src="{p}assets/js/site.js" defer></script>\n<script src="{p}assets/js/track.js" defer></script>')
     full_title = f"{title} — {SITE}" if title != SITE else "chopon.ai — AI’ni dehqonchasiga o‘rganamiz"
     return f"""<!doctype html>
 <html lang="uz">
@@ -213,7 +215,7 @@ def page(title, desc, body, depth, active="", body_class=""):
 <meta property="og:title" content="{html.escape(full_title)}">
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:image" content="{p}assets/img/logo-512.png">
-<meta name="theme-color" content="#022391">
+<meta name="theme-color" content="#022391">{"<meta name=\"robots\" content=\"noindex, nofollow\">" if private else ""}
 <link rel="icon" href="{p}assets/img/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="{p}assets/img/tab-icon-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="{p}assets/img/tab-icon-64.png">
@@ -242,7 +244,8 @@ def page(title, desc, body, depth, active="", body_class=""):
     <p class="f-copy">© 2026 chopon.ai</p>
   </div>
 </footer>
-<script src="{p}assets/js/site.js" defer></script>
+<script src="{p}assets/js/firebase-config.js"></script>
+{scripts}
 </body>
 </html>
 """
@@ -407,6 +410,59 @@ def build_lesson(l, prev, nxt):
     (d / f"{l['slug']}.html").write_text(page(l["title"], l["lead"], body, 3, "lessons", "lesson-page"), "utf8")
 
 
+def build_admin():
+    """Hidden statistics page: /salohiddin (no links to it anywhere; data needs sign-in)."""
+    body = """
+<section class="page-hero ikat admin-hero">
+  <div class="wrap">
+    <p class="eyebrow">Shaxsiy panel</p>
+    <h1>Sayt statistikasi</h1>
+    <p class="lead">Tashrifchilar, ko‘rishlar va saytda o‘tkazilgan o‘rtacha vaqt.</p>
+  </div>
+</section>
+<section class="wrap admin">
+  <div id="a-setup" class="a-card" hidden>
+    <h2>Firebase hali ulanmagan</h2>
+    <p><code>assets/js/firebase-config.js</code> fayliga Firebase loyihasi ma’lumotlarini kiriting.</p>
+  </div>
+  <div id="a-login" class="a-card a-login" hidden>
+    <h2>Kirish</h2>
+    <form id="a-form">
+      <label>Email<input id="a-email" type="email" autocomplete="username" required></label>
+      <label>Parol<input id="a-pass" type="password" autocomplete="current-password" required></label>
+      <button class="btn btn-yellow" type="submit">Kirish</button>
+      <p id="a-err" class="a-err" role="alert"></p>
+    </form>
+  </div>
+  <div id="a-dash" hidden>
+    <div class="a-bar">
+      <div class="filters" role="group" aria-label="Davr">
+        <button type="button" class="filter rng" data-d="1">Bugun</button>
+        <button type="button" class="filter rng on" data-d="7">7 kun</button>
+        <button type="button" class="filter rng" data-d="30">30 kun</button>
+        <button type="button" class="filter rng" data-d="90">90 kun</button>
+      </div>
+      <div class="a-acts"><span id="a-status" class="a-status"></span>
+        <button type="button" id="a-reload" class="filter">↻ Yangilash</button>
+        <button type="button" id="a-out" class="filter">Chiqish (<span id="a-who"></span>)</button></div>
+    </div>
+    <div id="a-kpi" class="kpis"></div>
+    <div class="a-card"><div class="a-head"><h2>Kunlar bo‘yicha</h2>
+      <p class="legend"><i class="lp"></i>Ko‘rishlar <i class="lv"></i>Tashrifchilar</p></div>
+      <div id="a-chart" class="a-chart"></div></div>
+    <div class="a-grid">
+      <div class="a-card a-wide"><h2>Eng ko‘p ochilgan sahifalar</h2>
+        <table class="a-table"><thead><tr><th>Sahifa</th><th class="n">Ko‘rish</th><th class="n">O‘rtacha vaqt</th></tr></thead>
+        <tbody id="a-pages"></tbody></table></div>
+      <div class="a-card"><h2>Qurilmalar</h2><ul id="a-dev" class="a-share"></ul></div>
+      <div class="a-card"><h2>Qayerdan kelishdi</h2><ul id="a-ref" class="a-share"></ul></div>
+    </div>
+  </div>
+</section>
+"""
+    (OUT / "salohiddin.html").write_text(page("Statistika", "Shaxsiy statistika paneli.", body, 0, "", "admin-page", private=True), "utf8")
+
+
 def main():
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -418,6 +474,7 @@ def main():
     build_home(lessons)
     build_lessons_hub(lessons)
     build_ai_index(lessons)
+    build_admin()
     for i, l in enumerate(lessons):
         build_lesson(l, lessons[i - 1] if i else None, lessons[i + 1] if i + 1 < len(lessons) else None)
     print(f"built {len(lessons)} lessons -> {OUT}")
