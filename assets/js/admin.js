@@ -40,7 +40,8 @@ const fmt = (sec) => {
   return m ? `${m} daq ${String(s).padStart(2, "0")} s` : `${s} s`;
 };
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-const dayKey = (d) => d.toISOString().slice(0, 10);
+// local calendar day (Tashkent time), not UTC
+const dayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 function render(rows, since) {
   const visitors = new Set(rows.map((r) => r.visitor));
