@@ -402,7 +402,7 @@ a.patch { background: var(--primary); color: var(--white); }
 /* ---------- social links ---------- */
 .social { padding: 0 20px 90px; }
 .soc-lead { margin: -14px 0 26px; color: var(--muted); font-size: 18px; }
-.soc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.soc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
 .soc-card {
   position: relative; display: flex; align-items: center; gap: 18px; padding: 22px 24px;
   border: 2px solid var(--ink); border-radius: 20px; box-shadow: 6px 6px 0 var(--ink);
@@ -411,6 +411,7 @@ a.patch { background: var(--primary); color: var(--white); }
 .soc-card::after { content: ""; position: absolute; inset: 8px; border: 2px dashed rgba(250, 190, 49, .6); border-radius: 13px; pointer-events: none; }
 .soc-card.ig { background: var(--primary); }
 .soc-card.tg { background: var(--electric); }
+.soc-card.yt { background: var(--deep); }
 .soc-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--ink); }
 .soc-ico { flex: none; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 16px; background: var(--white); color: var(--primary); }
 .soc-ico svg { width: 30px; height: 30px; }
@@ -424,8 +425,8 @@ a.patch { background: var(--primary); color: var(--white); }
 .f-social svg { width: 22px; height: 22px; }
 .site-footer .wrap { grid-template-columns: auto 1fr auto auto; }
 @media (max-width: 960px) { .site-footer .wrap { grid-template-columns: 1fr; } }
+@media (max-width: 960px) { .soc-grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
-  .soc-grid { grid-template-columns: 1fr; }
   .soc-card { padding: 18px; gap: 14px; }
   .soc-ico { width: 50px; height: 50px; }
 }
